@@ -2,6 +2,11 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+
+# git remote add origin https://github.com/AlexWeeeng22/TempleCalculationWithDFT.git
+# git branch -M main
+# git push -u origin main
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fftpack import fft, ifft
@@ -50,50 +55,64 @@ def print_hi(name):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('=== Program Started ===')
 
-    Ts = 1  # 采样时间
-    fs = 1400  # 采样频率
-    N = Ts * fs  # 采样点数
-    # 在Ts内采样N个点
-    xs = np.linspace(0, Ts, int(N))
+'''
+fitLocationNnm
+fitLocationFreq[fitLocationNum] = []
+'''
 
-    # 生成采样信号 由180Hz，390Hz和600Hz的正弦波叠加
-    ys = 7.0 * np.sin(2 * np.pi * 180 * xs) + 2.8 * np.sin(2 * np.pi * 390 * xs) + 5.1 * np.sin(2 * np.pi * 600 * xs)
+'''
+:param ys:离散时域信号
+:param k:频域索引
+:param N:采样点数
+:param fs:采样信号
+:return:
+'''
 
-    amp, fre, pha = myfft(ys, xs, fs)  # 调用scipy.fftpack里的fft
-    Xk, A, amp2, fre2 = myDFT(ys, int(N), int(N), fs)
+print('=== Program Started ===')
 
-    # 绘图
-    plt.subplot(221)
-    plt.plot(xs, ys)
-    plt.title('OriSignal')
-    plt.xlabel('Time / s')
-    plt.ylabel('Intencity / cd')
+Ts = 1  # 采样时间
+fs = 1400  # 采样频率
+N = Ts * fs  # 采样点数
+# 在Ts内采样N个点
+xs = np.linspace(0, Ts, int(N))
 
-    # 反傅里叶变换
-    ys390 = 2.8 * np.sin(2 * np.pi * 390 * xs)
-    H = np.zeros((int(N)))
-    H[390 - 50:390 + 50] = 1
-    H[1400 - 390 - 50:1400 - 390 + 50] = 1  # 将390Hz附近的频率获取
-    IFFT = ifft(H * Xk)
-    plt.subplot(223)
-    plt.plot(xs, IFFT, alpha=0.75, color='r')
-    plt.plot(xs, ys390, alpha=0.75, color='g')
-    plt.legend(['IFFT', 'ys390'])
-    plt.title('IFFT Filter')
+# 生成采样信号 由180Hz，390Hz和600Hz的正弦波叠加
+ys = 7.0 * np.sin(2 * np.pi * 180 * xs) + 2.8 * np.sin(2 * np.pi * 390 * xs) + 5.1 * np.sin(2 * np.pi * 600 * xs)
 
-    plt.subplot(222)
-    plt.plot(fre, amp)
-    plt.title("'fft's Amplitute-Frequence-Curve")
-    plt.ylabel('Amplitute / a.u.')
-    plt.xlabel('Frequence / Hz')
+amp, fre, pha = myfft(ys, xs, fs)  # 调用scipy.fftpack里的fft
+Xk, A, amp2, fre2 = myDFT(ys, int(N), int(N), fs)
 
-    plt.subplot(224)
-    plt.plot(fre2, amp2)
-    plt.title("myDFT's Amplitute-Frequence-Curve")
-    plt.ylabel('DFT Amplitute / a.u.')
-    plt.xlabel('DFT Frequence / Hz')
-    plt.show()
+# 绘图
+plt.subplot(221)
+plt.plot(xs, ys)
+plt.title('OriSignal')
+plt.xlabel('Time / s')
+plt.ylabel('Intencity / cd')
+
+# 反傅里叶变换
+ys390 = 2.8 * np.sin(2 * np.pi * 390 * xs)
+H = np.zeros((int(N)))
+H[390 - 50:390 + 50] = 1
+H[1400 - 390 - 50:1400 - 390 + 50] = 1  # 将390Hz附近的频率获取
+IFFT = ifft(H * Xk)
+plt.subplot(223)
+plt.plot(xs, IFFT, alpha=0.75, color='r')
+plt.plot(xs, ys390, alpha=0.75, color='g')
+plt.legend(['IFFT', 'ys390'])
+plt.title('IFFT Filter')
+
+plt.subplot(222)
+plt.plot(fre, amp)
+plt.title("'fft's Amplitute-Frequence-Curve")
+plt.ylabel('Amplitute / a.u.')
+plt.xlabel('Frequence / Hz')
+
+plt.subplot(224)
+plt.plot(fre2, amp2)
+plt.title("myDFT's Amplitute-Frequence-Curve")
+plt.ylabel('DFT Amplitute / a.u.')
+plt.xlabel('DFT Frequence / Hz')
+plt.show()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
