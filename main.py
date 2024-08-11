@@ -48,37 +48,53 @@ def myfft(x, t, fs):
     return amp,fre,pha                                        # 返回幅度和频率
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+
+def rect_wave(x, freq, w):  # 生成频率为freq(unit/hour)，宽度为w(mins)（矩形波分布在频率中心两侧）的一个矩形波，x为自变量domain， 函数输出为应变量range
+    T = 1/freq * 60 # mins/unit
+    if (x % T <= (T + w/2)) & (x % T >= (T - w/2)):
+        r = 1
+    else:
+        r = 0.0
+    return r
+
+fitLocationFreq = [0.04, 0.04, 0.07, 0.07, 0.07, 0.07,
+                   1.56, 1.56, 1.56, 1.56, 0.78, 0.78, 0.3, 0.3, 0.45, 0.45,
+                   0.26, 0.26, 0.26, 0.26, 0.26, 0.26, 0.26, 0.26, 0.13, 0.13, 0.13, 0.13,
+                   0.06, 0.06, 0.12, 0.12, 0.12, 0.12, 0.39, 0.39, 0.65, 0.65, 0.26, 0.26]
+
+x0 = np.linspace(0, 960, 10000) # [0, n] mins, resolution 3600
+y0 = np.array([rect_wave(dx, fitLocationFreq[0], 10) for dx in x0])
+
+for freq in fitLocationFreq:
+    y1 = y0 + np.array([rect_wave(dx, freq, 10) for dx in x0])
+    y0 = y1
+
+
+
+
+plt.ylim(-0.1, 50)
+plt.plot(x0, y1)
+plt.show()
+
+#进行离散傅里叶变换
+
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
-'''
-fitLocationNnm
-fitLocationFreq[fitLocationNum] = []
-'''
+    print('=== Program Started ===')
 
 '''
-:param ys:离散时域信号
-:param k:频域索引
-:param N:采样点数
-:param fs:采样信号
-:return:
-'''
-
-print('=== Program Started ===')
-
-Ts = 1  # 采样时间
-fs = 1400  # 采样频率
+Ts = 8  # 采样时间
+fs = 100  # 采样频率
 N = Ts * fs  # 采样点数
+
 # 在Ts内采样N个点
 xs = np.linspace(0, Ts, int(N))
 
-# 生成采样信号 由180Hz，390Hz和600Hz的正弦波叠加
-ys = 7.0 * np.sin(2 * np.pi * 180 * xs) + 2.8 * np.sin(2 * np.pi * 390 * xs) + 5.1 * np.sin(2 * np.pi * 600 * xs)
+# 生成采样信号 由180Hz正弦波叠加
+ys = 7.0 * np.sin(2 * np.pi * 180 * xs)
 
 amp, fre, pha = myfft(ys, xs, fs)  # 调用scipy.fftpack里的fft
 Xk, A, amp2, fre2 = myDFT(ys, int(N), int(N), fs)
@@ -114,5 +130,28 @@ plt.title("myDFT's Amplitute-Frequence-Curve")
 plt.ylabel('DFT Amplitute / a.u.')
 plt.xlabel('DFT Frequence / Hz')
 plt.show()
+
+
+def rect_wave(x, c, c0):  # 起点为c0，宽度为c的矩形波
+    if x >= (c + c0):
+        r = 0.0
+    elif x < c0:
+        r = 0.0
+    else:
+        r = 1
+    return r
+
+
+x = np.linspace(-2, 4, 1000)
+y = np.array([rect_wave(t, 2.0, -1.0) for t in x])
+plt.ylim(-0.2, 1.2)
+plt.plot(x, y)
+plt.show()
+'''
+
+
+
+
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
