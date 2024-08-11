@@ -62,7 +62,7 @@ fitLocationFreq = [0.04, 0.04, 0.07, 0.07, 0.07, 0.07,
                    0.26, 0.26, 0.26, 0.26, 0.26, 0.26, 0.26, 0.26, 0.13, 0.13, 0.13, 0.13,
                    0.06, 0.06, 0.12, 0.12, 0.12, 0.12, 0.39, 0.39, 0.65, 0.65, 0.26, 0.26]
 
-x0 = np.linspace(0, 960, 10000) # [0, n] mins, resolution 3600
+x0 = np.linspace(0, 960, 100) # [0, n] mins, resolution 3600
 y0 = np.array([rect_wave(dx, fitLocationFreq[0], 10) for dx in x0])
 
 for freq in fitLocationFreq:
@@ -77,8 +77,20 @@ plt.plot(x0, y1)
 plt.show()
 
 #进行离散傅里叶变换
+Ts = 960  # 采样时间
+fs = 1024  # 采样频率
+N = Ts * fs  # 采样点数
 
+y2 = y1
+amp, fre, pha = myfft(y2, x0, fs)  # 调用scipy.fftpack里的fft
+Xk, A, amp2, fre2 = myDFT(y2, int(N), int(N), fs)
 
+plt.subplot(221)
+plt.plot(x0, y2)
+plt.title('OriSignal')
+plt.xlabel('Time / s')
+plt.ylabel('Intencity / cd')
+plt.show()
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
